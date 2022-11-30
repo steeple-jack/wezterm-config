@@ -1,21 +1,35 @@
 #!/bin/bash
 
-conf_dir="/home/chef/.config/wezterm/"
+conf_dir="$HOME/.config/wezterm/"
 fonts=".fonts"
 conf="wezterm.lua"
 
-if [ ! -d "$conf_dir/$fonts" ]; then
-  echo "Copying fonts..."
-  cp -r "./$fonts" $conf_dir/
-else
-  echo "Fonts already exists!"
-fi
+dir_check(){
+  if [ ! -d $conf_dir ]; then
+    echo "Making configuration directory..."
+    mkdir -p $conf_dir
+  else
+    echo "Configuration directory already exists!"
+  fi
+}
 
-if [ ! -f "$conf_dir/$conf" ]; then
-  echo "Copying config file..."
-  cp "./$conf" $conf_dir/
-else
-  echo "Configuration file already exist!"
-fi
+conf_copy(){
 
+  if [ ! -d "$conf_dir/$fonts" ]; then
+    echo "Copying fonts..."
+    cp -r "./$fonts" $conf_dir/
+  else
+    echo "Fonts already exists!"
+  fi
+
+  if [ ! -f "$conf_dir/$conf" ]; then
+    echo "Copying config file..."
+    cp "./$conf" $conf_dir/
+  else
+    echo "Configuration file already exist!"
+  fi
+}
+
+dir_check
+conf_copy
 
