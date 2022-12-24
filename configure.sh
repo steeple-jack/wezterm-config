@@ -1,8 +1,10 @@
 #!/bin/bash
 
-conf_dir="$HOME/.config/wezterm/"
+conf_dir="$HOME/.config/wezterm"
 fonts=".fonts"
 conf="wezterm.lua"
+
+git_conf_hash=$(sha256sum "./$conf" | sed 's/ .\/wezterm.lua//g') 
 
 dir_check(){
   if [ ! -d $conf_dir ]; then
@@ -26,7 +28,17 @@ conf_copy(){
     echo "Copying config file..."
     cp "./$conf" $conf_dir/
   else
-    echo "Configuration file already exist!"
+    echo "Configuration file already exists!"
+  fi
+
+  echo "$git_conf_hash $conf_dir/$conf" | sha256sum --check --status
+
+  if [ $? -eq 0 ]; then
+    echo "Checksum: OK"
+  else
+    echo "Checksum: ALTERED"
+#    echo "Expected SHA256 hash: $git_conf_hash"
+#    echo "Actual SHA256 hash: $(sha256sum "$conf_dir/$conf" | cut -c 1-64 )"
   fi
 }
 
