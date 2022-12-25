@@ -31,12 +31,29 @@ conf_copy(){
     echo "Configuration file already exists!"
   fi
 
+}
+
+conf_replace(){
+
+  echo "Do you want to replace the current config?"
+  select yn in "Yes" "No"; do
+    case $yn in
+      Yes ) cp "./$conf" "$conf_dir/$conf"; break;;
+      No ) break;;
+    esac
+  done
+
+}
+
+validate_hash(){
   echo "$git_conf_hash $conf_dir/$conf" | sha256sum --check --status
 
   if [ $? -eq 0 ]; then
     echo "Checksum: OK"
+    return 0
   else
     echo "Checksum: ALTERED"
+    return 1
 #    echo "Expected SHA256 hash: $git_conf_hash"
 #    echo "Actual SHA256 hash: $(sha256sum "$conf_dir/$conf" | cut -c 1-64 )"
   fi
@@ -44,4 +61,9 @@ conf_copy(){
 
 dir_check
 conf_copy
+validate_hash
 
+if [ $? -eq 1 ]; then
+  conf_replace
+  validate_hash
+fi
